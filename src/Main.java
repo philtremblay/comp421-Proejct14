@@ -1,4 +1,6 @@
 import javax.swing.*;
+
+import java.awt.Rectangle;
 import java.sql.*;
 
 public class Main {
@@ -24,10 +26,26 @@ public class Main {
 	}
 	
 	public static JFrame createFrame()
-	{
+	{	
+		
+		
 		JFrame lFrame = new JFrame("Group 14");
 		lFrame.setSize(512, 512);
 		lFrame.setVisible(true);
+		
+		//Field to execute Query
+		
+		JPanel lTextPanel = new JPanel();
+		lFrame.add(lTextPanel);
+		lTextPanel.setBounds(0, 0, lFrame.getWidth(), lFrame.getHeight());
+		JButton lButton = new JButton("Execute Query");
+		JTextField lTextField = new JTextField();
+		lTextPanel.add(lTextField);
+		lTextPanel.add(lButton);
+		lTextField.setBounds(0, 0, 512, 256);
+		lButton.setBounds(0, 300, 100, 100);		
+		
+
 		return lFrame;
 	}
 	
