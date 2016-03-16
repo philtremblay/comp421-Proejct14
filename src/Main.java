@@ -43,7 +43,7 @@ public class Main {
 		lTextPanel.add(lTextField);
 		lTextPanel.add(lButton);
 		lTextField.setBounds(0, 0, 512, 256);
-		lButton.setBounds(0, 300, 100, 100);
+		lButton.setBounds(300, 300, 100, 100);
 		
 		//execute query in Text Field into DB 
 		lButton.addActionListener(new ActionListener(){
@@ -83,16 +83,18 @@ public class Main {
 		assert(pQuery != null);
 		
 		try {
-			Statement lStatement = pConnection.createStatement();
+			Statement lStatement = pConnection.createStatement(
+					ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			ResultSet lResultSet = lStatement.executeQuery(pQuery);
-			//System.out.println(lResultSet.getMetaData().getColumnName(1)); debug
-			
+			//System.out.println(lResultSet.getMetaData().getColumnName(1)); //debug
 			//TODO: Fix this while loop
-			while(lResultSet.next())
-			{
+			while(lResultSet.next()) {
 				System.out.println("Column 1 returned");
-				System.out.println(lResultSet.getString(1));
+				System.out.println("Row Number: " + lResultSet.getRow());
+				System.out.println("Row Value: "+ lResultSet.getInt(1) + "," +
+						lResultSet.getString(2));
 			}
+		
 			lResultSet.close();
 			lStatement.close();
 		} catch (SQLException e) {
