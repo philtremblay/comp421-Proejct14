@@ -1,6 +1,8 @@
 import javax.swing.*;
 
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class Main {
@@ -33,8 +35,6 @@ public class Main {
 		lFrame.setSize(512, 512);
 		lFrame.setVisible(true);
 		
-		//Field to execute Query
-		
 		JPanel lTextPanel = new JPanel();
 		lFrame.add(lTextPanel);
 		lTextPanel.setBounds(0, 0, lFrame.getWidth(), lFrame.getHeight());
@@ -43,7 +43,15 @@ public class Main {
 		lTextPanel.add(lTextField);
 		lTextPanel.add(lButton);
 		lTextField.setBounds(0, 0, 512, 256);
-		lButton.setBounds(0, 300, 100, 100);		
+		lButton.setBounds(0, 300, 100, 100);
+		
+		//execute query in Text Field into DB 
+		lButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+			{
+				executeQuery(conn,lTextField.getText());
+			}
+		});
 		
 
 		return lFrame;
@@ -72,10 +80,14 @@ public class Main {
 	public static void executeQuery(Connection pConnection, String pQuery)
 	{
 		assert(pConnection != null);
+		assert(pQuery != null);
 		
 		try {
 			Statement lStatement = pConnection.createStatement();
 			ResultSet lResultSet = lStatement.executeQuery(pQuery);
+			//System.out.println(lResultSet.getMetaData().getColumnName(1)); debug
+			
+			//TODO: Fix this while loop
 			while(lResultSet.next())
 			{
 				System.out.println("Column 1 returned");
