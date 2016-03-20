@@ -19,8 +19,8 @@ public class DBImplementation {
 	private static Connection conn = null;
 
 	// DB Credentials
-	private static final String DB_USERNAME = "sfosti"; // needs to be updated
-	private static final String DB_PASSWORD = "dNT8ap6M";
+	private static final String DB_USERNAME = "cs421g14"; //needs to be updated
+	private static final String DB_PASSWORD = "[lephant22]";
 	private static final String DB_URL = "jdbc:postgresql://comp421.cs.mcgill.ca/cs421";
 
 	// connect to DB
@@ -36,20 +36,24 @@ public class DBImplementation {
 		}
 	}
 	
+	// close the database
 	public static void closeDB()
 	{
 		try {
+			if(stmt != null)
+				stmt.close();
 			conn.close();
 			JOptionPane.showMessageDialog(null,"Database closed successfully");
 			System.exit(0);
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			JOptionPane.showMessageDialog(null,"Database closed With error: " + e);
+			JOptionPane.showMessageDialog(null,"Database closed With error: " + e.getSQLState());
 
 		}
 	}
 	
+	// add a tuple to a specific table
 	public static void addTuple(String sql)
 	{
 		try {
