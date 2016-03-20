@@ -308,20 +308,25 @@ public class Views implements ActionListener {
 			JOptionPane.showMessageDialog(null,"You did not provide your name for identification");
 			return;
 		}
+		else if(!DBImplementation.isNameExist("'"+ nameText.getText() + "'"))
+		{
+			JOptionPane.showMessageDialog(null,"Name " + nameText.getText() + " does not exist in table Customer from the database");
+		}
 		else
 			continueModification("'" + nameText.getText() + "'");	
 	}
 	
+	// apply the modification in the database and reset the text view when the update is successful
 	private void continueModification(String name){
-		if(!usernameText.getText().equals(""))
-			DBImplementation.executeModification("username", "'"+ usernameText.getText() + "'", name);
-		if(!phoneText.getText().equals(""))
-			DBImplementation.executeModification("phone", "'"+phoneText.getText() + "'",name);
-		if(!emailText.getText().equals(""))
-			DBImplementation.executeModification("email", "'"+emailText.getText() + "'", name);
-		if(!addressText.getText().equals(""))
-			DBImplementation.executeModification("address", "'"+addressText.getText() + "'", name);
-		JOptionPane.showMessageDialog(null,"Query executed successfully");
+		DBImplementation.executeModification(name, usernameText.getText(), phoneText.getText(), 
+				emailText.getText(),addressText.getText());
+		nameText.setText(null);
+		usernameText.setText(null);	
+		phoneText.setText(null);	
+		emailText.setText(null);	
+		addressText.setText(null);	
+
+		
 	}
 }
 		

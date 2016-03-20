@@ -21,93 +21,118 @@ public class DBImplementation {
 	private static Connection conn = null;
 
 	// DB Credentials
-	private static final String DB_USERNAME = "cs421g14"; //needs to be updated
-	private static final String DB_PASSWORD = "[lephant22]";
-	
+	// private static final String DB_USERNAME = "cs421g14"; //needs to be
+	// updated
+	// private static final String DB_PASSWORD = "[lephant22]";
+	private static final String DB_USERNAME = "sfosti"; // needs to be updated
+	private static final String DB_PASSWORD = "dNT8ap6M";
 	private static final String DB_URL = "jdbc:postgresql://comp421.cs.mcgill.ca/cs421";
 
 	// connect to DB
-	public static void connectToDB()
-	{
-		try{
+	public static void connectToDB() {
+		try {
 			Class.forName(JDBC_DRIVER);
-			conn = DriverManager.getConnection(DB_URL,DB_USERNAME,DB_PASSWORD);
-			JOptionPane.showMessageDialog(null,"CONNECTED SUCCESSFULLY");
-		}catch(Exception e){
-			JOptionPane.showMessageDialog(null,"Unable to connect to the database");
-			System.exit(0);		
+			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+			JOptionPane.showMessageDialog(null, "CONNECTED SUCCESSFULLY");
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Unable to connect to the database");
+			System.exit(0);
 		}
 	}
-	
+
 	// close the database
-	public static void closeDB()
-	{
+	public static void closeDB() {
 		try {
-			if(stmt != null)
+			if (stmt != null)
 				stmt.close();
-			if(rs != null)
+			if (rs != null)
 				rs.close();
 			conn.close();
-			JOptionPane.showMessageDialog(null,"Database closed successfully");
+			JOptionPane.showMessageDialog(null, "Database closed successfully");
 			System.exit(0);
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			JOptionPane.showMessageDialog(null,"Database closed With error: " + e.getSQLState());
+			JOptionPane.showMessageDialog(null, "Database closed With error: " + e.getSQLState());
 
 		}
 	}
-	
+
 	// add a tuple to a specific table
-	public static void addTuple(String sql)
-	{
+	public static void addTuple(String sql) {
 		try {
 			stmt = conn.createStatement();
-	        stmt.executeUpdate(sql);
-			JOptionPane.showMessageDialog(null,"Query executed successfully");
+			stmt.executeUpdate(sql);
+			JOptionPane.showMessageDialog(null, "Query executed successfully");
 		} catch (SQLException e) {
-			//System.out.println(e);
-			JOptionPane.showMessageDialog(null,"Cannot execute: " + sql +  "\n" + e.getMessage());
+			// System.out.println(e);
+			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
 			System.exit(0);
-		}		
+		}
 	}
-	
-	// execute query to print the information about a user who did an order Based on the order status
-	public static String executeQueryStatus(String sql)
-	{
+
+	// execute query to print the information about a user who did an order
+	// Based on the order status
+	public static String executeQueryStatus(String sql) {
 		String str = "";
 		try {
 			stmt = conn.createStatement();
-	        rs = stmt.executeQuery(sql);
-	        int i = 1;
-	        
-	        while( rs.next()){
-	        	 str += (i + "- ORDER STATUS: " + rs.getString("order_status") + ", TOTAL PRICE: " 
-	        			+ rs.getString("totalprice") + ", NAME: " + rs.getString("name") + ", EMAIL: " 
-	        			+rs.getString("email") + ", PHONE: " + rs.getString("phone") + ", ADDRESS: " +
-	        			rs.getString("address") +"\n\n");
-	        	i++;
-	        }
+			rs = stmt.executeQuery(sql);
+			int i = 1;
+
+			while (rs.next()) {
+				str += (i + "- ORDER STATUS: " + rs.getString("order_status") + ", TOTAL PRICE: "
+						+ rs.getString("totalprice") + ", NAME: " + rs.getString("name") + ", EMAIL: "
+						+ rs.getString("email") + ", PHONE: " + rs.getString("phone") + ", ADDRESS: "
+						+ rs.getString("address") + "\n\n");
+				i++;
+			}
 		} catch (SQLException e) {
-			//System.out.println(e);
-			JOptionPane.showMessageDialog(null,"Cannot execute: " + sql +  "\n" + e.getMessage());
+			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
 			System.exit(0);
-		}	
+		}
 		return str;
-		
+
 	}
-	
-	public static void executeModification(String attr, String value, String name){
-		String sql = "UPDATE Customer SET " + attr + " = " + value + " WHERE name = " + name +";";
+
+	// check if a given name exists before trying to update the values
+	public static boolean isNameExist(String name) {
+		String sql = "SELECT name FROM Customer WHERE name = " + name;
 		try {
 			stmt = conn.createStatement();
-	        stmt.executeUpdate(sql);
+			rs = stmt.executeQuery(sql);
+			if (!rs.isBeforeFirst())
+				return false;
 		} catch (SQLException e) {
-			//System.out.println(e);
-			JOptionPane.showMessageDialog(null,"Cannot execute: " + sql +  "\n" + value + " is not valid");
+			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
 			System.exit(0);
-		}	
+		}
+		return true;
+
 	}
-	
-	
+
+	// execute an update for account modification
+	public static void executeModification(String name, String usernameText, String phoneText, String emailText,
+			String addressText) {
+		try {
+
+			stmt = conn.createStatement();
+			if (!usernameText.equals(""))
+				stmt.addBatch("UPDATE Customer SET username = '" + usernameText + "' WHERE name = " + name + ";");
+			if (!phoneText.equals(""))
+				stmt.addBatch("UPDATE Customer SET phone = '" + phoneText + "' WHERE name = " + name + ";");
+			if (!emailText.equals(""))
+				stmt.addBatch("UPDATE Customer SET email = '" + emailText + "' WHERE name = " + name + ";");
+			if (!addressText.equals(""))
+				stmt.addBatch("UPDATE Customer SET address = '" + addressText + "' WHERE name = " + name + ";");
+			stmt.executeBatch();
+			JOptionPane.showMessageDialog(null,"The modification has been saved!");
+
+		} catch (SQLException e) {
+			// System.out.println(e);
+			JOptionPane.showMessageDialog(null, e.getMessage());
+			System.exit(0);
+		}
+	}
+
 }
