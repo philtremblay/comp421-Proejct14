@@ -21,10 +21,9 @@ public class DBImplementation {
 	private static Connection conn = null;
 
 	// DB Credentials
-//	private static final String DB_USERNAME = "cs421g14"; //needs to be updated
-//	private static final String DB_PASSWORD = "[lephant22]";
-	private static final String DB_USERNAME = "username"; //needs to be updated
-	private static final String DB_PASSWORD = "password";
+	private static final String DB_USERNAME = "cs421g14"; //needs to be updated
+	private static final String DB_PASSWORD = "[lephant22]";
+	
 	private static final String DB_URL = "jdbc:postgresql://comp421.cs.mcgill.ca/cs421";
 
 	// connect to DB

@@ -46,9 +46,7 @@ public class Views implements ActionListener {
 		createFrame();
 		// set panel layout
 		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-		JScrollPane scrollContainer = new JScrollPane(container);
-		scrollContainer.setAutoscrolls(true);
-
+		
 		// panel for adding values to frame
 		addValuesToTableUI();
 		// get user info based on status of order
@@ -58,11 +56,15 @@ public class Views implements ActionListener {
 		// output textarea
 		displayOutputUI();
 		frame.add(container);
+		JScrollPane scrollContainer = new JScrollPane(container);
+		frame.add(scrollContainer);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setFocusable(true);
 		frame.setVisible(true);
 		frame.setResizable(false);
+		
+
 	}
 
 	// create and initialize the frame
@@ -87,13 +89,8 @@ public class Views implements ActionListener {
 		border.setTitleJustification(TitledBorder.CENTER);
 		border.setTitle(title);
 		border.setTitlePosition(TitledBorder.TOP);
-		pan.setBorder(new CompoundBorder(border, new EmptyBorder(15, 10, 30, 10)));// set
-																					// the
-																					// border
-																					// of
-																					// the
-																					// panel
-	}
+		pan.setBorder(new CompoundBorder(border, new EmptyBorder(15, 10, 30, 10)));// set the border of the panel
+		}
 
 	// add a new value to a specific
 	private void addValuesToTableUI() {
@@ -165,7 +162,7 @@ public class Views implements ActionListener {
 		JPanel textAreaPanel = new JPanel();
 		BorderLayout layout = new BorderLayout();
 		setLayout(textAreaPanel, layout, "OUTPUT");
-		textArea = new JTextArea(200, 50);
+		textArea = new JTextArea(10, 8);
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
