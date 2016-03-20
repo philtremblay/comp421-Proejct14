@@ -67,6 +67,6 @@ public class Values {
 	}
 	
 	// status of order
-		public final static String [] STATUS = {"--SELECT A STATUS",  "Completed", "Processing", 
-				"Shipped"};
+		public final static String [] STATUS = {"--SELECT A STATUS",  "'Completed'", "'Processing'", 
+				"'Shipped'"};
 }

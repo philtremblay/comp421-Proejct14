@@ -24,6 +24,7 @@ import variables.Values;
 public class Views  implements ActionListener {
 	// variables
 	private String item = Values.TABLES[0];
+	private String itemStatus = Values.TABLES[0];
 
 	// UI variables
 	protected JFrame frame;
@@ -32,6 +33,9 @@ public class Views  implements ActionListener {
 	protected JComboBox list, listStatus;
 	protected JTextField lTextField = new JTextField();
 	protected JButton buttonAdd = new JButton("EXECUTE");
+	protected JButton buttonStatus = new JButton("EXECUTE");
+	JTextArea textArea;
+
 	
 
 	public Views()
@@ -46,7 +50,7 @@ public class Views  implements ActionListener {
 		// panel for adding values to frame
 		addValuesToTableUI();
 		// get user info based on status of order
-		UserInfoByOrderStatusUI();
+		InfoByOrderStatusUI();
 		
 		// output textarea
 		displayOutputUI();
@@ -128,32 +132,40 @@ public class Views  implements ActionListener {
 		buttonAdd.setEnabled(false);		
 		container.add(addValuesPanel);
 	}
-	// UI for to find the information about user depending on the status of his/her order
-	private void UserInfoByOrderStatusUI()
+	// UI to find information about order based on the status
+	private void InfoByOrderStatusUI()
 	{
 		JPanel statusPanel = new JPanel();
 		BorderLayout statusLayout = new BorderLayout();
-		setLayout(statusPanel,statusLayout, "INFO ABOUT USER BASED ON ORDER STATUS");
+		setLayout(statusPanel,statusLayout, "INFO ABOUT ORDER BASED ON STATUS");
 		// create combo box
 		listStatus = new JComboBox(Values.STATUS);
 		listStatus.addActionListener(this);
 		// create a label and add it to the Panel
-		JLabel addingValuesLabel = new JLabel("<html>Choose the status of Order<br> "
-				+ "for which you want information about the customer: </html>");
+		JLabel addingValuesLabel = new JLabel("<html>Choose the status of Order "
+				+ "for which you want to have informations: </html>");
 		addingValuesLabel.setFont(new Font("Serif", Font.BOLD, 18));
-		addingValuesLabel.setLabelFor(list);
+		addingValuesLabel.setLabelFor(listStatus);
+		statusPanel.add(addingValuesLabel, statusLayout.NORTH);
+		statusPanel.add(listStatus);
+
+		// button
+		buttonStatus.addActionListener(this);
+		buttonStatus.setEnabled(false);
+		statusPanel.add(buttonStatus,statusLayout.SOUTH);
 		container.add(statusPanel);
 	}
-	
+
 	// display output to the box
 	private void displayOutputUI()
 	{
 		JPanel textAreaPanel = new JPanel();
 		BorderLayout layout = new BorderLayout();
 		setLayout(textAreaPanel,layout, "OUTPUT");
-		JTextArea textArea = new JTextArea(200, 50);
+		textArea = new JTextArea(200, 50);
 		JScrollPane scrollPane = new JScrollPane(textArea); 
 		textArea.setEditable(false);
+		textArea.setLineWrap(true);
 		textAreaPanel.add(textArea);
 		container.add(textAreaPanel);
 	
@@ -162,7 +174,7 @@ public class Views  implements ActionListener {
 	
 /***********************************************************************************
  * This section is more about the logic of the UI instead of the UI itself
- * Eample: handle button click
+ * Example: handle button click
 	********************************************************************************************/	
 	
 	
@@ -175,6 +187,10 @@ public class Views  implements ActionListener {
 			// when clicking on the button from the
 			else if(e.getSource() == buttonAdd)
 				performActionButtonAdd();
+			else if(e.getSource() == listStatus)
+				performActionOnListStatus();
+			else if(e.getSource() == buttonStatus)
+				performActionButtonStatus();
 		}
 	
 	// action to perform when choosing an element from the list of Tables to add tuples
@@ -195,13 +211,33 @@ public class Views  implements ActionListener {
 		}
 	}
 	
-	// action to perform when choosing an element from the list of Tables to add tuples
+	// action to perform when clicking on Execute button for adding a tuple
 		private void performActionButtonAdd()
 		{
-			System.out.println("HERE");
 			String [] arrAttr =  Values.attributesTables(item);
 			String query = "INSERT INTO " + item + " ( " + Arrays.toString(arrAttr).replace("]", "").
 					replace("[", " ") + ") VALUES (  " + lTextField.getText() + " );";
 			DBImplementation.addTuple(query);
+		}
+		
+		// action to perform when clicking on Execute button to display info about user's order based on order status
+		private void performActionButtonStatus(){
+			String query = "SELECT *"
+					+ "  FROM (" +
+					"SELECT * FROM \n(" + 
+							"SELECT c.order_status, c.totalprice, p.pid FROM CustOrder AS c, PaymentInfo AS p \n"
+							+ " WHERE c.order_status = " + itemStatus + " AND c.numberoncc = p.numberOnCC) Temp) Temp2 \n"+ 
+			"INNER JOIN Customer ON Temp2.pid = Customer.pid;";
+			textArea.setText(DBImplementation.executeQueryStatus(query));
+		}
+		
+		// action to perform when choosing an element from the list of Status
+		private void performActionOnListStatus()
+		{
+			itemStatus = listStatus.getSelectedItem().toString();
+			if(!itemStatus.equals(Values.STATUS[0]))
+				buttonStatus.setEnabled(true);
+			else 
+				buttonStatus.setEnabled(false);
 		}
 }
