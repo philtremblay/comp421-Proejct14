@@ -23,8 +23,8 @@ public class DBImplementation {
 	// DB Credentials
 //	private static final String DB_USERNAME = "cs421g14"; //needs to be updated
 //	private static final String DB_PASSWORD = "[lephant22]";
-	private static final String DB_USERNAME = "sfosti"; //needs to be updated
-	private static final String DB_PASSWORD = "dNT8ap6M";
+	private static final String DB_USERNAME = "username"; //needs to be updated
+	private static final String DB_PASSWORD = "password";
 	private static final String DB_URL = "jdbc:postgresql://comp421.cs.mcgill.ca/cs421";
 
 	// connect to DB
@@ -96,6 +96,18 @@ public class DBImplementation {
 		}	
 		return str;
 		
+	}
+	
+	public static void executeModification(String attr, String value, String name){
+		String sql = "UPDATE Customer SET " + attr + " = " + value + " WHERE name = " + name +";";
+		try {
+			stmt = conn.createStatement();
+	        stmt.executeUpdate(sql);
+		} catch (SQLException e) {
+			//System.out.println(e);
+			JOptionPane.showMessageDialog(null,"Cannot execute: " + sql +  "\n" + value + " is not valid");
+			System.exit(0);
+		}	
 	}
 	
 	
