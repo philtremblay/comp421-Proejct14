@@ -1,19 +1,18 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -21,10 +20,11 @@ import javax.swing.border.TitledBorder;
 import database.DBImplementation;
 import variables.Values;
 
-public class Views implements ActionListener {
+public class Views implements ActionListener, ItemListener {
 	// variables
 	private String item = Values.TABLES[0];
 	private String itemStatus = Values.TABLES[0];
+	private ArrayList <JCheckBox>listItem  = new ArrayList<JCheckBox>();
 
 	// UI variables
 	protected JFrame frame;
@@ -35,10 +35,13 @@ public class Views implements ActionListener {
 	protected JButton buttonAdd = new JButton("EXECUTE");
 	protected JButton buttonStatus = new JButton("EXECUTE");
 	protected JButton buttonSave = new JButton("SAVE");
+	protected JButton buttonCompute = new JButton("COMPUTE TOTAL PRICE");
+
 
 	JTextArea textArea;
 	
 	JTextField addressText, phoneText, emailText, nameText, usernameText;
+	
 	
 
 	public Views() {
@@ -52,7 +55,7 @@ public class Views implements ActionListener {
 		// get user info based on status of order
 		InfoByOrderStatusUI();
 		modifyAccountUI();
-
+		BuyItemUI();
 		// output textarea
 		displayOutputUI();
 		frame.add(container);
@@ -237,6 +240,43 @@ public class Views implements ActionListener {
 
 		container.add(accountPanel);
 	}
+	
+	private void BuyItemUI()
+	{
+		JPanel itemPanel = new JPanel();
+		BorderLayout itemLayout = new BorderLayout();
+		setLayout(itemPanel, itemLayout, "CHECK ITEM TO BUY");
+		
+		JPanel wrapper = new JPanel();
+		wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+		JCheckBox check1 = new JCheckBox(Values.ITEM[0]);
+		JCheckBox check2 = new JCheckBox(Values.ITEM[1]);
+		JCheckBox check3 = new JCheckBox(Values.ITEM[2]);
+		JCheckBox check4 = new JCheckBox(Values.ITEM[3]);
+		JCheckBox check5 = new JCheckBox(Values.ITEM[4]);
+		JCheckBox check6 = new JCheckBox(Values.ITEM[5]);
+		
+		check1.addItemListener(this);
+		check2.addItemListener(this);
+		check3.addItemListener(this);
+		check4.addItemListener(this);
+		check5.addItemListener(this);
+		check6.addItemListener(this);
+		
+		wrapper.add(check1);
+		wrapper.add(check2);
+		wrapper.add(check3);
+		wrapper.add(check4);
+		wrapper.add(check5);
+		wrapper.add(check6);
+		itemPanel.add(wrapper);
+		
+		buttonCompute.addActionListener(this);
+		itemPanel.add(buttonCompute, BorderLayout.SOUTH);
+		container.add(itemPanel);
+	
+		
+	}
 
 	/***********************************************************************************
 	 * This section is more about the logic of the UI instead of the UI itself
@@ -258,6 +298,8 @@ public class Views implements ActionListener {
 			performActionButtonStatus();
 		else if(e.getSource() == buttonSave)
 			performActionButtonSave();
+		else if (e.getSource() == buttonCompute)
+			performActionButtonCompute();
 	}
 
 	// action to perform when choosing an element from the list of Tables to add
@@ -325,9 +367,34 @@ public class Views implements ActionListener {
 		phoneText.setText(null);	
 		emailText.setText(null);	
 		addressText.setText(null);	
-
-		
 	}
+	
+	// when clicking on button to compute the total price
+	private void performActionButtonCompute(){
+		if(listItem.isEmpty() )
+		{
+			textArea.setText(null);
+			JOptionPane.showMessageDialog(null," You have not selected any item");
+			return;
+		}
+		String value = "";
+		int n, i;
+		for(i = 0, n = listItem.size(); i < n-1; i++)
+			value += "'" + listItem.get(i).getText() + "', ";
+		value += "'" + listItem.get(n-1).getText() + "'";
+		
+		textArea.setText(DBImplementation.computePrice(value));
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		 if(e.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
+	            listItem.add((JCheckBox) e.getSource());
+	        } else {
+	        	listItem.remove(e.getItem());
+	        }		
+	}
+	
 }
 		
 		

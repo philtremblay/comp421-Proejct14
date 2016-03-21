@@ -21,11 +21,9 @@ public class DBImplementation {
 	private static Connection conn = null;
 
 	// DB Credentials
-	// private static final String DB_USERNAME = "cs421g14"; //needs to be
-	// updated
-	// private static final String DB_PASSWORD = "[lephant22]";
-	private static final String DB_USERNAME = "sfosti"; // needs to be updated
-	private static final String DB_PASSWORD = "dNT8ap6M";
+	private static final String DB_USERNAME = "cs421g14"; //needs to be
+	private static final String DB_PASSWORD = "[lephant22]";
+	
 	private static final String DB_URL = "jdbc:postgresql://comp421.cs.mcgill.ca/cs421";
 
 	// connect to DB
@@ -115,7 +113,6 @@ public class DBImplementation {
 	public static void executeModification(String name, String usernameText, String phoneText, String emailText,
 			String addressText) {
 		try {
-
 			stmt = conn.createStatement();
 			if (!usernameText.equals(""))
 				stmt.addBatch("UPDATE Customer SET username = '" + usernameText + "' WHERE name = " + name + ";");
@@ -133,6 +130,33 @@ public class DBImplementation {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 			System.exit(0);
 		}
+	}
+	
+	// compute the total price of the selected items
+	public static String computePrice(String list) {
+		String sql1 = "SELECT description, price FROM SportEquipment WHERE description IN ( " + list + " );";
+
+		String sql = "SELECT SUM(price::numeric) AS total FROM SportEquipment WHERE description IN ( " + list + " );";
+		String price = "";
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql1);
+			while(rs.next()){
+				price += rs.getString("description") + ": " + rs.getString("price") + "\n";
+			}
+			
+			rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				price += "\n\nTotal price: $ " + rs.getString("total");
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
+			System.exit(0);
+		}
+		return price;
 	}
 
 }
