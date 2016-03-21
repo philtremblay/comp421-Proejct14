@@ -1,13 +1,6 @@
 package database;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import javax.swing.JOptionPane;
-
-import java.sql.Statement;
+import java.sql.*;
 
 public class DBImplementation {
 	private static Statement stmt = null;
@@ -90,11 +83,13 @@ public class DBImplementation {
 	}
 
 	// check if a given name exists before trying to update the values
+	//Using prepared statement
 	public static boolean isNameExist(String name) {
-		String sql = "SELECT name FROM Customer WHERE name = " + name;
+		String sql = "SELECT name FROM Customer WHERE name = ?";
 		try {
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(sql);
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, name);
+			rs = pstmt.executeQuery(sql);
 			if (!rs.isBeforeFirst())
 				return false;
 		} catch (SQLException e) {
