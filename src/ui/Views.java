@@ -24,7 +24,8 @@ public class Views implements ActionListener, ItemListener {
 	// variables
 	private String item = Values.TABLES[0];
 	private String itemStatus = Values.TABLES[0];
-	private ArrayList <JCheckBox>listItem  = new ArrayList<JCheckBox>();
+	private ArrayList<JCheckBox> listItem = new ArrayList<JCheckBox>();
+	String itemRadio;
 
 	// UI variables
 	protected JFrame frame;
@@ -36,28 +37,29 @@ public class Views implements ActionListener, ItemListener {
 	protected JButton buttonStatus = new JButton("EXECUTE");
 	protected JButton buttonSave = new JButton("SAVE");
 	protected JButton buttonCompute = new JButton("COMPUTE TOTAL PRICE");
-
+	protected JButton buttonFind = new JButton("FIND SHOES AND CLOTHES");
+	protected JButton buttonQuit = new JButton("QUIT");
 
 	JTextArea textArea;
-	
+
 	JTextField addressText, phoneText, emailText, nameText, usernameText;
-	
-	
 
 	public Views() {
 		// create the frame
 		createFrame();
 		// set panel layout
 		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-		
+
 		// panel for adding values to frame
 		addValuesToTableUI();
 		// get user info based on status of order
 		InfoByOrderStatusUI();
 		modifyAccountUI();
+		chooseByEquipmentUI();
 		BuyItemUI();
 		// output textarea
 		displayOutputUI();
+		quit();
 		frame.add(container);
 		JScrollPane scrollContainer = new JScrollPane(container);
 		frame.add(scrollContainer);
@@ -66,8 +68,6 @@ public class Views implements ActionListener, ItemListener {
 		frame.setFocusable(true);
 		frame.setVisible(true);
 		frame.setResizable(false);
-		
-
 	}
 
 	// create and initialize the frame
@@ -77,7 +77,7 @@ public class Views implements ActionListener, ItemListener {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				DBImplementation.closeDB();
+				DBImplementation.closeDBAndQuit();
 			}
 		});
 	}
@@ -92,8 +92,13 @@ public class Views implements ActionListener, ItemListener {
 		border.setTitleJustification(TitledBorder.CENTER);
 		border.setTitle(title);
 		border.setTitlePosition(TitledBorder.TOP);
-		pan.setBorder(new CompoundBorder(border, new EmptyBorder(15, 10, 30, 10)));// set the border of the panel
-		}
+		pan.setBorder(new CompoundBorder(border, new EmptyBorder(15, 10, 30, 10)));// set
+																					// the
+																					// border
+																					// of
+																					// the
+																					// panel
+	}
 
 	// add a new value to a specific
 	private void addValuesToTableUI() {
@@ -222,7 +227,7 @@ public class Views implements ActionListener, ItemListener {
 		phonePanel.add(phoneLabel, BorderLayout.WEST);
 		phonePanel.add(phoneText);
 		wrapper.add(phonePanel);
-		
+
 		// textfield and label for address
 		JPanel addressPanel = new JPanel(new BorderLayout());
 		addressText = new JTextField();
@@ -232,21 +237,73 @@ public class Views implements ActionListener, ItemListener {
 		addressPanel.add(addressLabel, BorderLayout.WEST);
 		addressPanel.add(addressText);
 		wrapper.add(addressPanel);
-		
+
 		// button
 		buttonSave.addActionListener(this);
-				accountPanel.add(wrapper);
+		accountPanel.add(wrapper);
 		accountPanel.add(buttonSave, BorderLayout.SOUTH);
 
 		container.add(accountPanel);
 	}
-	
-	private void BuyItemUI()
-	{
+
+	private void chooseByEquipmentUI() {
+		buttonFind.setEnabled(false);
+		JPanel itemPanel = new JPanel();
+		BorderLayout itemLayout = new BorderLayout();
+		setLayout(itemPanel, itemLayout, "DISPLAY ITEMS BY SPORT EQUIPMENT");
+
+		JPanel wrapper = new JPanel();
+		wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+
+		JLabel label = new JLabel(
+				"Choose a sport equipment below to display all the " + "corresponding items in the text area ");
+		label.setFont(new Font("Serif", Font.BOLD, 18));
+		wrapper.add(label);
+
+		JRadioButton buttonradio1 = new JRadioButton(Values.TABLES[1]);
+		JRadioButton buttonradio2 = new JRadioButton(Values.TABLES[5]);
+		JRadioButton buttonradio3 = new JRadioButton(Values.TABLES[10]);
+
+		buttonradio1.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				buttonFind.setEnabled(true);
+				itemRadio = Values.TABLES[1];
+			}
+		});
+
+		buttonradio2.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				buttonFind.setEnabled(true);
+				itemRadio = Values.TABLES[5];
+			}
+		});
+		buttonradio3.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				buttonFind.setEnabled(true);
+				itemRadio = Values.TABLES[10];
+			}
+		});
+
+		wrapper.add(buttonradio1);
+		wrapper.add(buttonradio2);
+		wrapper.add(buttonradio3);
+		itemPanel.add(wrapper);
+
+		buttonFind.addActionListener(this);
+		itemPanel.add(buttonFind, BorderLayout.SOUTH);
+		container.add(itemPanel);
+
+	}
+
+	// choose items to buy
+	private void BuyItemUI() {
 		JPanel itemPanel = new JPanel();
 		BorderLayout itemLayout = new BorderLayout();
 		setLayout(itemPanel, itemLayout, "CHECK ITEM TO BUY");
-		
+
 		JPanel wrapper = new JPanel();
 		wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
 		JCheckBox check1 = new JCheckBox(Values.ITEM[0]);
@@ -255,14 +312,14 @@ public class Views implements ActionListener, ItemListener {
 		JCheckBox check4 = new JCheckBox(Values.ITEM[3]);
 		JCheckBox check5 = new JCheckBox(Values.ITEM[4]);
 		JCheckBox check6 = new JCheckBox(Values.ITEM[5]);
-		
+
 		check1.addItemListener(this);
 		check2.addItemListener(this);
 		check3.addItemListener(this);
 		check4.addItemListener(this);
 		check5.addItemListener(this);
 		check6.addItemListener(this);
-		
+
 		wrapper.add(check1);
 		wrapper.add(check2);
 		wrapper.add(check3);
@@ -270,12 +327,15 @@ public class Views implements ActionListener, ItemListener {
 		wrapper.add(check5);
 		wrapper.add(check6);
 		itemPanel.add(wrapper);
-		
+
 		buttonCompute.addActionListener(this);
 		itemPanel.add(buttonCompute, BorderLayout.SOUTH);
 		container.add(itemPanel);
-	
-		
+	}
+
+	private void quit() {
+		buttonQuit.addActionListener(this);
+		container.add(buttonQuit);
 	}
 
 	/***********************************************************************************
@@ -296,10 +356,14 @@ public class Views implements ActionListener, ItemListener {
 			performActionOnListStatus();
 		else if (e.getSource() == buttonStatus)
 			performActionButtonStatus();
-		else if(e.getSource() == buttonSave)
+		else if (e.getSource() == buttonSave)
 			performActionButtonSave();
 		else if (e.getSource() == buttonCompute)
 			performActionButtonCompute();
+		else if (e.getSource() == this.buttonFind)
+			performActionButtonFind();
+		else if (e.getSource() == buttonQuit)
+			performActionQuit();
 	}
 
 	// action to perform when choosing an element from the list of Tables to add
@@ -344,57 +408,64 @@ public class Views implements ActionListener, ItemListener {
 		else
 			buttonStatus.setEnabled(false);
 	}
-	
-	private void performActionButtonSave(){
-		if(nameText.getText().equals("")){
-			JOptionPane.showMessageDialog(null,"You did not provide your name for identification");
+
+	private void performActionButtonSave() {
+		if (nameText.getText().equals("")) {
+			JOptionPane.showMessageDialog(null, "You did not provide your name for identification");
 			return;
-		}
-		else if(!DBImplementation.isNameExist("'"+ nameText.getText() + "'"))
-		{
-			JOptionPane.showMessageDialog(null,"Name " + nameText.getText() + " does not exist in table Customer from the database");
-		}
-		else
-			continueModification("'" + nameText.getText() + "'");	
+		} else if (!DBImplementation.isNameExist("'" + nameText.getText() + "'")) {
+			JOptionPane.showMessageDialog(null,
+					"Name " + nameText.getText() + " does not exist in table Customer from the database");
+		} else
+			continueModification("'" + nameText.getText() + "'");
 	}
-	
-	// apply the modification in the database and reset the text view when the update is successful
-	private void continueModification(String name){
-		DBImplementation.executeModification(name, usernameText.getText(), phoneText.getText(), 
-				emailText.getText(),addressText.getText());
+
+	// apply the modification in the database and reset the text view when the
+	// update is successful
+	private void continueModification(String name) {
+		DBImplementation.executeModification(name, usernameText.getText(), phoneText.getText(), emailText.getText(),
+				addressText.getText());
 		nameText.setText(null);
-		usernameText.setText(null);	
-		phoneText.setText(null);	
-		emailText.setText(null);	
-		addressText.setText(null);	
+		usernameText.setText(null);
+		phoneText.setText(null);
+		emailText.setText(null);
+		addressText.setText(null);
 	}
-	
+
 	// when clicking on button to compute the total price
-	private void performActionButtonCompute(){
-		if(listItem.isEmpty() )
-		{
+	private void performActionButtonCompute() {
+		if (listItem.isEmpty()) {
 			textArea.setText(null);
-			JOptionPane.showMessageDialog(null," You have not selected any item");
+			JOptionPane.showMessageDialog(null, " You have not selected any item");
 			return;
 		}
 		String value = "";
 		int n, i;
-		for(i = 0, n = listItem.size(); i < n-1; i++)
+		for (i = 0, n = listItem.size(); i < n - 1; i++)
 			value += "'" + listItem.get(i).getText() + "', ";
-		value += "'" + listItem.get(n-1).getText() + "'";
-		
+		value += "'" + listItem.get(n - 1).getText() + "'";
+
 		textArea.setText(DBImplementation.computePrice(value));
 	}
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		 if(e.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
-	            listItem.add((JCheckBox) e.getSource());
-	        } else {
-	        	listItem.remove(e.getItem());
-	        }		
+		if (e.getStateChange() == ItemEvent.SELECTED) {// checkbox has been
+														// selected
+			listItem.add((JCheckBox) e.getSource());
+		} else {
+			listItem.remove(e.getItem());
+		}
 	}
-	
+
+	private void performActionButtonFind() {
+		textArea.setText(DBImplementation.displayItemsSport(itemRadio));
+
+	}
+
+	// quit
+	private void performActionQuit() {
+		DBImplementation.closeDBAndQuit();
+	}
+
 }
-		
-		

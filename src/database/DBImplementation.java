@@ -21,9 +21,8 @@ public class DBImplementation {
 	private static Connection conn = null;
 
 	// DB Credentials
-	private static final String DB_USERNAME = "cs421g14"; //needs to be
+	private static final String DB_USERNAME = "cs421g14"; // needs to be
 	private static final String DB_PASSWORD = "[lephant22]";
-	
 	private static final String DB_URL = "jdbc:postgresql://comp421.cs.mcgill.ca/cs421";
 
 	// connect to DB
@@ -39,20 +38,19 @@ public class DBImplementation {
 	}
 
 	// close the database
-	public static void closeDB() {
+	public static void closeDBAndQuit() {
 		try {
 			if (stmt != null)
 				stmt.close();
 			if (rs != null)
 				rs.close();
 			conn.close();
-			JOptionPane.showMessageDialog(null, "Database closed successfully");
+			JOptionPane.showMessageDialog(null, "Database closed successfully, Click OK to quit");
 			System.exit(0);
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "Database closed With error: " + e.getSQLState());
-
 		}
 	}
 
@@ -65,7 +63,6 @@ public class DBImplementation {
 		} catch (SQLException e) {
 			// System.out.println(e);
 			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
-			System.exit(0);
 		}
 	}
 
@@ -87,7 +84,6 @@ public class DBImplementation {
 			}
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
-			System.exit(0);
 		}
 		return str;
 
@@ -103,7 +99,6 @@ public class DBImplementation {
 				return false;
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
-			System.exit(0);
 		}
 		return true;
 
@@ -123,15 +118,33 @@ public class DBImplementation {
 			if (!addressText.equals(""))
 				stmt.addBatch("UPDATE Customer SET address = '" + addressText + "' WHERE name = " + name + ";");
 			stmt.executeBatch();
-			JOptionPane.showMessageDialog(null,"The modification has been saved!");
+			JOptionPane.showMessageDialog(null, "The modification has been saved!");
 
 		} catch (SQLException e) {
 			// System.out.println(e);
 			JOptionPane.showMessageDialog(null, e.getMessage());
-			System.exit(0);
 		}
 	}
-	
+
+	// display the item dependong on the selected sport equipment
+	public static String displayItemsSport(String table) {
+		String sql = "SELECT S.description FROM SportEquipment AS S, " + table + " WHERE S.itemID = " + table
+				+ ".itemID;";
+		String description = "";
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			int i = 1;
+			while (rs.next()) {
+				description += i + "- " + rs.getString("description") + "\n ";
+				i++;
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
+		}
+		return description;
+	}
+
 	// compute the total price of the selected items
 	public static String computePrice(String list) {
 		String sql1 = "SELECT description, price FROM SportEquipment WHERE description IN ( " + list + " );";
@@ -141,20 +154,17 @@ public class DBImplementation {
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql1);
-			while(rs.next()){
+			while (rs.next()) {
 				price += rs.getString("description") + ": " + rs.getString("price") + "\n";
 			}
-			
+
 			rs = stmt.executeQuery(sql);
-			while(rs.next()){
+			while (rs.next()) {
 				price += "\n\nTotal price: $ " + rs.getString("total");
 			}
-			
-			
-			
+
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Cannot execute: " + sql + "\n" + e.getMessage());
-			System.exit(0);
 		}
 		return price;
 	}
