@@ -263,6 +263,12 @@ public class Views implements ActionListener, ItemListener {
 		JRadioButton buttonradio1 = new JRadioButton(Values.TABLES[1]);
 		JRadioButton buttonradio2 = new JRadioButton(Values.TABLES[5]);
 		JRadioButton buttonradio3 = new JRadioButton(Values.TABLES[10]);
+		ButtonGroup group = new ButtonGroup();
+		group.add(buttonradio1);
+		group.add(buttonradio2);
+		group.add(buttonradio3);
+
+
 
 		buttonradio1.addItemListener(new ItemListener() {
 			@Override

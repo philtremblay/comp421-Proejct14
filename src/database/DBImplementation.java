@@ -136,7 +136,7 @@ public class DBImplementation {
 			rs = stmt.executeQuery(sql);
 			int i = 1;
 			while (rs.next()) {
-				description += i + "- " + rs.getString("description") + "\n ";
+				description += i + "- " + rs.getString("description") + "\n";
 				i++;
 			}
 		} catch (SQLException e) {
