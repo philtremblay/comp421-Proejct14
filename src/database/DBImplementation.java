@@ -89,7 +89,7 @@ public class DBImplementation {
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, name);
-			rs = pstmt.executeQuery(sql);
+			rs = pstmt.executeQuery();
 			if (!rs.isBeforeFirst())
 				return false;
 		} catch (SQLException e) {
